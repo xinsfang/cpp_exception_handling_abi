@@ -80,3 +80,9 @@ _Unwind_Reason_Code __gxx_personality_v0 (
 
 }
 
+namespace std {
+    [[noreturn]] void terminate() noexcept {
+        printf("%s gets called!\n", __func__);
+        exit(1);
+    }
+}

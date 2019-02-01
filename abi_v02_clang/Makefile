@@ -1,11 +1,12 @@
-CC=cc
-CXX=c++
+CC=clang
+CXX=clang++
 all: main
 
 CFLAGS := -O0 -g -v
 CXXFLAGS := -O0 -g -v
 
-main: main.o throw.o
+#main: main.o throw.o
+main: main.o throw.o mycppabi.o
 	$(CC) -o $@ -v $^
 #	$(CXX) -o $@ -v $^
 

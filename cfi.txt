@@ -1,0 +1,24 @@
+CFI support for GNU assembler (GAS)
+Modern ABIs don't require frame pointers to be used in functions. However missing FPs bring difficulties when doing a backtrace. One solution is to provide Dwarf-2 CFI data for each such function. This can be easily done for example by GCC in it's output, but isn't that easy to write by hand for pure assembler functions.
+
+With the help of these .cfi_* directives one can add appropriate unwind info into his asm source without too much trouble.
+
+Directives implemented so far:
+
+
+ 
+.cfi_startproc
+Use at the beginning of each function. It initializes some internal data structures and emits initial CFI instructions.
+.cfi_endproc
+Opens .eh_frame, generates appropriate binary structures (CIE, FDE) and sets up relocation records.
+.cfi_def_cfa reg,imm
+Set a rule for computing CFA to: take content of register reg and add imm to it.
+.cfi_def_cfa_register reg
+Change rule for CFA to use reg. Offset remains the same.
+.cfi_def_cfa_offset imm
+Change rule for CFA to use offset imm. Register remains the same.
+.cfi_adjust_cfa_offset imm
+Like the previous one but imm is a relative value that will be added to current offset instead of an absolute value as in .cfi_def_cfa_offset.
+.cfi_offset reg,imm
+Generate a rule saying that register reg is saved at offset imm from CFA.
+
