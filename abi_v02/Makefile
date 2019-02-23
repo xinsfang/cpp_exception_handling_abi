@@ -10,7 +10,9 @@ main.o: main.c
 		gcc -c -o main.o -O0 -ggdb main.c
 
 app: main.o throw.o mycppabi.o
-		gcc main.o throw.o mycppabi.o -O0 -ggdb -o app
+#app: main.o throw.o
+		#gcc main.o throw.o mycppabi.o -O0 -ggdb -o app
+		gcc -O0 -ggdb -o $@ $^
 
 throw.gas: throw.cpp
 		g++ -c throw.cpp -g -Wa,-adhls > throw.gas
