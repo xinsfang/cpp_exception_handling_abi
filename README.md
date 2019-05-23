@@ -7,4 +7,5 @@ The goal of this project is not replacing libstdc++ but only to learn a bit abou
 
 This is the code repository for an article that can be found at http://monoinfinito.wordpress.com/series/exception-handling-in-c/
 
-
+https://llvm.org/docs/ExceptionHandling.html
+llvm/docs/ExceptionHandling.rst

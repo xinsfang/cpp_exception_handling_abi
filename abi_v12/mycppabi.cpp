@@ -168,7 +168,7 @@ struct Call_Site {
     // Length of the block that might throw
     uint8_t len;
     // Landing pad
-    uint8_t lp;
+    uint8_t lp; //If we want to get the EIP for a specific landing pad, all we have to do is _Unwind_GetRegionStart + LSDA_Call_Site.cs_lp
     // Offset into action table + 1 (0 means no action)
     // Used to run destructors
     uint8_t action;
@@ -396,12 +396,12 @@ _Unwind_Reason_Code
 }
 
 
-_Unwind_Reason_Code __gxx_personality_v0 (
+_Unwind_Reason_Code __gxx_personality_v0 ( //_Unwind_Reason_code tells _Unwind_ whehter we found a landing pad to handle the exception or not. If found, return _URC_HANDLER_FOUND in lookup phase and _URC_INSTALL_CONTEXT in cleanup phase
                              int version,
-                             _Unwind_Action actions,
+                             _Unwind_Action actions, // Exception catching is handled in two phases: lookup (_UA_SEARCH_PHASE) and cleanup (_UA_CLEANUP_PHASE). _Unwind_ uses actions to tell the personality function what it should do.
                              uint64_t exceptionClass,
-                             _Unwind_Exception* unwind_exception,
-                             _Unwind_Context* context)
+                             _Unwind_Exception* unwind_exception, // point to original allocated exception
+                             _Unwind_Context* context) // hold all the information regarding the current stack frame. e.g. the LSDA.
 {
     // Calculate what the instruction pointer was just before the
     // exception was thrown for this stack frame
@@ -416,7 +416,7 @@ _Unwind_Reason_Code __gxx_personality_v0 (
     __cxa_exception *exception_header =(__cxa_exception*)(unwind_exception+1)-1;
     std::type_info *thrown_exception_type = exception_header->exceptionType;
 
-    // Get a pointer to the raw memory address of the LSDA
+    // Get a pointer to the raw memory address of the LSDA of the current statck
     LSDA_ptr raw_lsda = (LSDA_ptr) _Unwind_GetLanguageSpecificData(context);
 
     // Create an object to hide some part of the LSDA processing
@@ -441,7 +441,7 @@ _Unwind_Reason_Code __gxx_personality_v0 (
                 action != NULL;
                 action = lsda.get_next_action())
         {
-            if (action->type_index == 0)
+            if (action->type_index == 0) // It's a cleanup block
             {
                 // If there is an action entry but it doesn't point to any
                 // type, it means this is actually a cleanup block and we
@@ -471,7 +471,7 @@ _Unwind_Reason_Code __gxx_personality_v0 (
         }
     }
 
-    return _URC_CONTINUE_UNWIND;
+    return _URC_CONTINUE_UNWIND; // the exception can't be handled
 }
 
 }

@@ -27,8 +27,8 @@ The entry point the ABI defines to know(in runtime) whehter two types are same o
 A try and catch block is translated into a pair of __cxa_begin_catch and __cxa_end_catch, plus something called CFI to find landing pads, the points on a function where an exception can be handled.
 Then the personality function, which will be called by __cxa_throw, will read gcc_except_table for every method in the stack, to find something called LSDA. The personality function will then check in the LSDA whehter a catch can handle an exception and if there is any cleanup code to run(this is what triggers the destructos when needed.)
 
-CFI: call frame information. It's used mostly, to unwind the stack.
-LSDA: language specific data area. It's used by the personality function to know which exceptions can be handled by this function.
+CFI: call frame information. It's used mostly, to unwind the stack. It uses LEB encoding. (https://en.wikipedia.org/wiki/LEB128)
+LSDA: language specific data area. It's used by the personality function to know which exceptions can be handled by this function. LSDA is in CFI format.
 
 ## __cxa_begin_catch
 
